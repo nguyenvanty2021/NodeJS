@@ -1,8 +1,10 @@
 const express = require("express");
 const app = express();
+const path = require("path");
 const handlebars = require("express-handlebars");
 const port = 3000;
 const morgan = require("morgan");
+app.use(express.static(path.join(__dirname, "public")));
 // http logger
 app.use(morgan("combined"));
 // template engine
