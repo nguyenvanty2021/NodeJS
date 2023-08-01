@@ -1,2 +1,9 @@
 header {
-  color: red; }
+  color: orange;
+  background-color: blue;
+  border: 1px solid red; }
+
+footer {
+  background-color: yellow;
+  color: green;
+  top: 1; }
