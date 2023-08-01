@@ -4,7 +4,15 @@ const path = require("path");
 const handlebars = require("express-handlebars");
 const port = 3000;
 const morgan = require("morgan");
+const routes = require("./routes/index");
 app.use(express.static(path.join(__dirname, "public")));
+// using middleware
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
+app.use(express.json());
 // http logger
 app.use(morgan("combined"));
 // template engine
@@ -26,11 +34,9 @@ app.get(
   //   <h1 style="color: red" >Trang chủ</h1>
   // `)
 );
-app.get("/news", (req, res) => res.render("news"));
-app.get("/search", (req, res) => {
-  console.log(req?.query?.q);
-  return res.render("search");
-});
+// Bước 1 -> file index.js trong folder routes là bước 2
+// Routes init
+routes(app);
 // 127.0.0.1 - localhost
 app.listen(port, () =>
   console.log(`Example app listening at http://localhost:${port}`)
