@@ -6,7 +6,7 @@ class NewsController {
   }
   // [GET] /news/:slug
   show(req, res) {
-    res.send("news details");
+    res.send("news detail");
   }
 }
 module.exports = new NewsController();
