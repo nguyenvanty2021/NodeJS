@@ -1,28 +1,22 @@
 const Course = require('./../models/Course.js')
+const { multipleMongooseToObject } = require('../../util/mongoose.js')
 
 class SiteController {
   // [GET] /
-  async index(req, res) {
-    // res.render("home");
+  async index(req, res, next) {
     try {
       // vì find({}) không có điều kiện nào trong object {} nên nó get all
-      const courses = await Course.find({});
-      res.json(courses)
+      let courses = await Course.find({});
+      // res.json(courses)
+      res.render("home", {
+        courses: multipleMongooseToObject(courses)
+      });
     } catch (error) {
-      res.status(500).json({
-        error
-      })
+      next(error)
       // res.status(500).json({
-      //   error: 'ERROR!!!'
+      //   error
       // })
     }
-    // Course.find({}, (err, courses) => {
-    //   if (!err) res.json(courses)
-    //   // error exists thì thông báo lỗi 500 kèm message 'ERROR!!!'
-    //   res.status(500).json({
-    //     error: 'ERROR!!!'
-    //   })
-    // })
   }
   // [GET] /search
   search(req, res) {

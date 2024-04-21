@@ -1,1 +1,12 @@
-<h1>Home Page</h1>
+<div>
+
+  {{#each courses}}
+    <div>
+      <img src="{{this.image}}" alt="{{this.name}}" />
+      <p>{{this.name}}</p>
+      <p>{{this.description}}</p>
+      <p>{{this.price}}</p>
+    </div>
+  {{/each}}
+
+</div>
