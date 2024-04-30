@@ -6,6 +6,24 @@ const port = 3000;
 const morgan = require("morgan");
 const routes = require("./routes/index");
 const db = require("./config/db");
+const router = require('./apiRouter.js')
+const bodyParser = require('body-parser')
+
+
+//// channel 2
+
+app.use(bodyParser.urlencoded({
+  extended: false
+}))
+
+app.use(bodyParser.json())
+
+// for web
+app.use('/api/v1/', router)
+// for admin
+app.use('/admin/api/v1/', router)
+
+//// channel 1
 
 // Connect to db
 db.connect();
