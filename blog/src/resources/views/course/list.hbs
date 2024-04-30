@@ -1,0 +1,11 @@
+{{#each courses}}
+  <div>
+    <p>
+      <a href="/course/{{this.slug}}">detail</a>
+    </p>
+    <img src="{{this.image}}" alt="{{this.name}}" />
+    <p>{{this.name}}</p>
+    <p>{{this.description}}</p>
+    <p>{{this.price}}</p>
+  </div>
+{{/each}}
