@@ -17,38 +17,44 @@ router.get('/cart', (req, res) => {
   res.json('router cart')
 })
 
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
   const { username, password } = req.body
-  AccountModel.findOne({
-    username,
-    password
-  })
-    .collation({
+  try {
+    const data = await AccountModel.findOne({
+      username,
+      password
+    }).collation({
       locale: 'en', strength: 2 // Collation locale 'en' cho tiếng Anh, strength: 2 để so sánh không phân biệt chữ hoa chữ thường
     })
-    .then(data => {
-      console.log(data)
-      if (data) {
-        res.status(200).json('Login thanh cong')
-      } else {
-        res.status(400).json('Username or password không chính xác')
-      }
-    })
-    .catch(error => {
-      res.status(500).json('Loi server')
-    })
+    if (data) res.status(200).json('Login thanh cong')
+    else res.status(400).json('Username or password không chính xác')
+  } catch (error) {
+    res.status(500).json('Loi server')
+  }
 })
 
-router.post('/register', (req, res) => {
+router.post('/register', async (req, res) => {
   console.log(req.headers)
   const { username, password } = req.body
-  console.log(username, password)
-
-  AccountModel.create({
-    username,
-    password
-  }).then(() => res.json('Tạo tài khoản thành công!!!'))
-    .catch(() => res.status(500).json('Tạo tài khoản thất bại!!!'))
+  const showError = () => res.status(500).json('Dang ky tài khoản thất bại!!!')
+  try {
+    const data = await AccountModel.findOne({
+      username
+    }).collation({
+      locale: 'en', strength: 2 // Collation locale 'en' cho tiếng Anh, strength: 2 để so sánh không phân biệt chữ hoa chữ thường
+    })
+    if (data) res.status(400).json('Username nay da duoc dang ky')
+    else {
+      AccountModel.create({
+        username,
+        password
+      })
+        .then(() => res.status(200).json('Dang ky tai khoan thanh cong'))
+        .catch(() => showError())
+    }
+  } catch (error) {
+    showError()
+  }
 })
 router.put('/', (req, res) => {
   res.json('router user PUT')
