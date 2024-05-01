@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+const jwt = require('jsonwebtoken')
 const AccountModel = require('./../app/models/Account')
 
 //// channel 2
@@ -43,6 +44,7 @@ router.post('/login', async (req, res) => {
     }).collation({
       locale: 'en', strength: 2 // Collation locale 'en' cho tiếng Anh, strength: 2 để so sánh không phân biệt chữ hoa chữ thường
     })
+    console.log(data)
     if (data) res.status(200).json('Login thanh cong')
     else res.status(400).json('Username or password không chính xác')
   } catch (error) {
