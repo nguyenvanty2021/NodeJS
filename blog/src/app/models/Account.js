@@ -19,4 +19,13 @@ const AccountSchema = new Schema({
 
 const AccountModel = mongoose.model('account', AccountSchema)
 
+// fake account
+
+// for (let i = 0; i < 100; i++) {
+//   AccountModel.create({
+//     username: 'vanty' + i,
+//     password: '123'
+//   })
+// }
+
 module.exports = AccountModel

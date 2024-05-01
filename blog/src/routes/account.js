@@ -5,13 +5,31 @@ const AccountModel = require('./../app/models/Account')
 //// channel 2
 
 router.get('/', async (req, res) => {
+  const { page = 1, limit = 10 } = req.query
   try {
-    const data = await AccountModel.find({}).collation({
-      locale: 'en', strength: 2 // Collation locale 'en' cho tiếng Anh, strength: 2 để so sánh không phân biệt chữ hoa chữ thường
+    let data = []
+    if (page && limit) {
+      const skipPage = (parseInt(page) - 1) * limit
+      data = await AccountModel.find({})
+        .skip(skipPage)
+        .limit(limit)
+        .collation({
+          locale: 'en', strength: 2 // Collation locale 'en' cho tiếng Anh, strength: 2 để so sánh không phân biệt chữ hoa chữ thường
+        })
+    } else {
+      // nếu không truyền page thì get all
+      data = await AccountModel.find({}).collation({
+        locale: 'en', strength: 2 // Collation locale 'en' cho tiếng Anh, strength: 2 để so sánh không phân biệt chữ hoa chữ thường
+      })
+    }
+    AccountModel.countDocuments({}).then((total) => {
+      res.status(200).json({
+        data,
+        total,
+        totalPage: Math.ceil(total / limit)
+      })
     })
-    res.status(200).json(data)
   } catch (error) {
-    console.log(error)
     res.status(500).json('Loi server')
   }
 })
