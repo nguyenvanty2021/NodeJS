@@ -17,6 +17,28 @@ router.get('/cart', (req, res) => {
   res.json('router cart')
 })
 
+router.post('/login', (req, res) => {
+  const { username, password } = req.body
+  AccountModel.findOne({
+    username,
+    password
+  })
+    .collation({
+      locale: 'en', strength: 2 // Collation locale 'en' cho tiếng Anh, strength: 2 để so sánh không phân biệt chữ hoa chữ thường
+    })
+    .then(data => {
+      console.log(data)
+      if (data) {
+        res.status(200).json('Login thanh cong')
+      } else {
+        res.status(400).json('Username or password không chính xác')
+      }
+    })
+    .catch(error => {
+      res.status(500).json('Loi server')
+    })
+})
+
 router.post('/register', (req, res) => {
   console.log(req.headers)
   const { username, password } = req.body
