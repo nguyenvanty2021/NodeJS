@@ -6,7 +6,7 @@ const port = 3000;
 const morgan = require("morgan");
 const routes = require("./routes/index");
 const db = require("./config/db");
-const router = require('./apiRouter.js')
+const routerAccount = require('./routes/account.js')
 const bodyParser = require('body-parser')
 
 
@@ -19,9 +19,9 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json())
 
 // for web
-app.use('/api/v1/', router)
+app.use('/api/v1/account/', routerAccount)
 // for admin
-app.use('/admin/api/v1/', router)
+app.use('/admin/api/v1/account/', routerAccount)
 
 //// channel 1
 
