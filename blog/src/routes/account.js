@@ -48,7 +48,7 @@ router.post('/login', async (req, res) => {
     if (data) {
       const token = jwt.sign({ // truyền vào jwt.sign là 1 object mới work jwt
         _id: data?._id
-      }, 'abcdef') // 'abcdef' là signature
+      }, 'abcdef') // 'abcdef' là secret key
       res.status(200).json({
         message: 'Login thanh cong',
         token
@@ -61,16 +61,48 @@ router.post('/login', async (req, res) => {
   }
 })
 
-// call api private
-router.get('/private/:token', (req, res, next) => {
+const checkAuth = (req, res, next) => {
   try {
-    const { token } = req.params
-    const decodeToken = jwt.verify(token, 'abcdef')
-    if (decodeToken) next()
+    const { token } = req.headers
+    const decodeTokenIsId = jwt.verify(token, 'abcdef') // vì data trước khi mã hóa server respon cho client chỉ có _id thôi
+    AccountModel.findOne({
+      _id: decodeTokenIsId
+    })
+      .collation({
+        locale: 'en', strength: 2 // Collation locale 'en' cho tiếng Anh, strength: 2 để so sánh không phân biệt chữ hoa chữ thường
+      })
+      .then((data) => {
+        // data là object user vừa login nhận được từ hàm findOne
+        if (data) {
+          req.data = data
+          next()
+        } else {
+          res.status(500).json('Not permission')
+        }
+
+      })
+      .catch((error) => {
+        console.log(error)
+        res.status(500).json('User không tồn tại!!!')
+      })
   } catch (error) {
-    res.json('Token expire')
+    res.json('Token expire or token invalid')
   }
-}, (req, res) => {
+}
+
+const checkRole = (req, res, next) => {
+  // lúc này cái req này có thể get dc object user login => do đoạn req.data = data trong middleware ở trên
+  console.log(req)
+  if (req?.data?._doc?.role === 'admin') {
+    next()
+  }
+  else {
+    res.status(400).json('Chỉ có role admin mới nhận được data task này')
+  }
+}
+
+// call api private và chỉ có role user là "admin" mới nhận được data này
+router.get('/private', checkAuth, checkRole, (req, res) => {
   res.status(200).json('co data roi ne')
 })
 
