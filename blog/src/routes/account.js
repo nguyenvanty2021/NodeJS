@@ -45,11 +45,33 @@ router.post('/login', async (req, res) => {
       locale: 'en', strength: 2 // Collation locale 'en' cho tiếng Anh, strength: 2 để so sánh không phân biệt chữ hoa chữ thường
     })
     console.log(data)
-    if (data) res.status(200).json('Login thanh cong')
+    if (data) {
+      const token = jwt.sign({ // truyền vào jwt.sign là 1 object mới work jwt
+        _id: data?._id
+      }, 'abcdef') // 'abcdef' là signature
+      res.status(200).json({
+        message: 'Login thanh cong',
+        token
+      })
+    }
     else res.status(400).json('Username or password không chính xác')
   } catch (error) {
+    console.log(error)
     res.status(500).json('Loi server')
   }
+})
+
+// call api private
+router.get('/private/:token', (req, res, next) => {
+  try {
+    const { token } = req.params
+    const decodeToken = jwt.verify(token, 'abcdef')
+    if (decodeToken) next()
+  } catch (error) {
+    res.json('Token expire')
+  }
+}, (req, res) => {
+  res.status(200).json('co data roi ne')
 })
 
 router.put('/change-password/:id', async (req, res) => {
