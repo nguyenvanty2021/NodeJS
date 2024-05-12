@@ -1,7 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
+const fs = require('fs')
 const AccountModel = require('./../app/models/Account')
+
+const privateKey = fs.readFileSync('/Users/tynguyen/Desktop/Nodejs/blog/secret_key_rsa/private_key.pem')
+const publicKey = fs.readFileSync('/Users/tynguyen/Desktop/Nodejs/blog/secret_key_rsa/public_key.pem')
 
 //// channel 2
 
@@ -48,7 +52,9 @@ router.post('/login', async (req, res) => {
     if (data) {
       const token = jwt.sign({ // truyền vào jwt.sign là 1 object mới work jwt
         _id: data?._id
-      }, 'abcdef') // 'abcdef' là secret key
+      }, privateKey, {
+        algorithm: 'RS256'
+      }) // 'abcdef' là secret key
       res.status(200).json({
         message: 'Login thanh cong',
         token
@@ -64,7 +70,9 @@ router.post('/login', async (req, res) => {
 const checkAuth = (req, res, next) => {
   try {
     const { token } = req.headers
-    const decodeTokenIsId = jwt.verify(token, 'abcdef') // vì data trước khi mã hóa server respon cho client chỉ có _id thôi
+    const decodeTokenIsId = jwt.verify(token, publicKey, {
+      algorithm: ['RS256']
+    }) // vì data trước khi mã hóa server respon cho client chỉ có _id thôi
     AccountModel.findOne({
       _id: decodeTokenIsId
     })
